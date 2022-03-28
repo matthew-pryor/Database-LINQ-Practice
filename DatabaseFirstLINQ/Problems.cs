@@ -15,11 +15,11 @@ namespace DatabaseFirstLINQ
         }
         public void RunLINQQueries()
         {
-            ProblemOne();
-            ProblemTwo();
-            ProblemThree();
-            ProblemFour();
-            ProblemFive();
+            //ProblemOne();
+            //ProblemTwo();
+            //ProblemThree();
+            //ProblemFour();
+            //ProblemFive();
             ProblemSix();
             //ProblemSeven();
             //ProblemEight();
@@ -103,11 +103,20 @@ namespace DatabaseFirstLINQ
             }
 
             }
-        
+
         private void ProblemSix()
         {
             // Write a LINQ query that gets all of the users who registered AFTER 2016 and BEFORE 2018
             // Then print each user's email and registration date to the console.
+            // self-note: Reference for DateTime https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings
+            var users = _context.Users;
+            DateTime date2016 = new DateTime(2016, 01, 01);
+            DateTime date2018 = new DateTime(2018, 01, 01);
+            var usersRegBtwn2016And2018 = users.Where(u => u.RegistrationDate > date2016 && u.RegistrationDate < date2018);
+            foreach (User user in usersRegBtwn2016And2018)
+            {
+                Console.WriteLine("User Email: " + user.Email + " Registered: " + user.RegistrationDate);
+            }
 
         }
 
