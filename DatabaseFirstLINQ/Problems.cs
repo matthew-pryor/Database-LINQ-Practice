@@ -142,7 +142,7 @@ namespace DatabaseFirstLINQ
             
             foreach (ShoppingCart item in scProductsWithAfton)
             {
-                Console.WriteLine($"Product: {item.Product.Name} Price: ${item.Product.Price} Quantity: {item.Quantity}"); //self-note: second dollar simple to reflect $299 as price (example)
+                Console.WriteLine($"Product: {item.Product.Name} Price: ${item.Product.Price} Quantity: {item.Quantity}"); //self-note: second dollar symbol is used to reflect $299 as price (example)
             }
 
 
@@ -165,10 +165,15 @@ namespace DatabaseFirstLINQ
         {
             // Write a LINQ query that retreives all of the products in the shopping cart of users who have the role of "Employee".
             // Then print the user's email as well as the product's name, price, and quantity to the console.
+            var employees = _context.UserRoles.Where(ur => ur.Role.RoleName == "Employee").Select(ur => ur.User.Id);
+            var scProducts = _context.ShoppingCarts.Include(sc => sc.Product).Include(sc => sc.User).Where(sc => employees.Contains(sc.User.Id));
+
+            foreach (ShoppingCart item in scProducts)
+            {
+                Console.WriteLine($"Email: {item.User.Email} Product: {item.Product.Name} Price: ${item.Product.Price} Quanity: {item.Quantity}");
+            }
 
         }
-
-        // <><><><><><><><> CUD (Create, Update, Delete) Actions <><><><><><><><><>
 
         // <><> C Actions (Create) <><>
 
