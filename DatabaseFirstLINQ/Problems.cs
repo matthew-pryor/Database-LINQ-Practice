@@ -31,10 +31,10 @@ namespace DatabaseFirstLINQ
             //ProblemFourteen();
             //ProblemFifteen();
             //ProblemSixteen();
-            ProblemSeventeen();
-            ProblemEighteen();
+            //ProblemSeventeen();
+            //ProblemEighteen();
             //ProblemNineteen();
-            //ProblemTwenty();
+            ProblemTwenty();
         }
 
         // <><><><><><><><> R Actions (Read) <><><><><><><><><>
@@ -300,10 +300,17 @@ namespace DatabaseFirstLINQ
             _context.SaveChanges();
         }
 
+
         private void ProblemTwenty()
         {
             // Delete the user with the email "oda@gmail.com" from the Users table using LINQ.
+            var odaEmail = _context.Users.Where(ur => ur.Email == "oda@gmail.com");
 
+            foreach (User user in odaEmail)
+            {
+                _context.Users.Remove(user);
+            }
+            _context.SaveChanges();
         }
 
         // <><><><><><><><> BONUS PROBLEMS <><><><><><><><><>
