@@ -15,12 +15,12 @@ namespace DatabaseFirstLINQ
         }
         public void RunLINQQueries()
         {
-            //ProblemOne();
-            //ProblemTwo();
-            //ProblemThree();
+            ProblemOne();
+            ProblemTwo();
+            ProblemThree();
             ProblemFour();
             ProblemFive();
-            //ProblemSix();
+            ProblemSix();
             //ProblemSeven();
             //ProblemEight();
             //ProblemNine();
@@ -66,7 +66,6 @@ namespace DatabaseFirstLINQ
             // Then print the name and price of each product from the above query to the console.
             var products = _context.Products;
 
-            var products = _context.Products;
 
             foreach (Product product in products)
             {
@@ -91,9 +90,6 @@ namespace DatabaseFirstLINQ
 
         }
 
-
-
-        }
         private void ProblemFive()
         {
             // Write a LINQ query that gets all of the users who registered BEFORE 2016
@@ -107,7 +103,7 @@ namespace DatabaseFirstLINQ
             }
 
             }
-
+        
         private void ProblemSix()
         {
             // Write a LINQ query that gets all of the users who registered AFTER 2016 and BEFORE 2018
