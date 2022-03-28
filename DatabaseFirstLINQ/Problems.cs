@@ -31,10 +31,11 @@ namespace DatabaseFirstLINQ
             //ProblemFourteen();
             //ProblemFifteen();
             //ProblemSixteen();
-            ProblemSeventeen();
-            ProblemEighteen();
+            //ProblemSeventeen();
+            //ProblemEighteen();
             //ProblemNineteen();
             //ProblemTwenty();
+            BonusOne();
         }
 
         // <><><><><><><><> R Actions (Read) <><><><><><><><><>
@@ -303,6 +304,14 @@ namespace DatabaseFirstLINQ
         private void ProblemTwenty()
         {
             // Delete the user with the email "oda@gmail.com" from the Users table using LINQ.
+            var odaEmail = _context.Users.Where(ur => ur.Email == "oda@gmail.com");
+
+            foreach (User user in odaEmail)
+            {
+                _context.Users.Remove(user);
+            }
+            _context.SaveChanges();
+
 
         }
 
@@ -313,6 +322,10 @@ namespace DatabaseFirstLINQ
             // Prompt the user to enter in an email and password through the console.
             // Take the email and password and check if the there is a person that matches that combination.
             // Print "Signed In!" to the console if they exists and the values match otherwise print "Invalid Email or Password.".
+
+            Console.WriteLine("Enter an email");
+            string userEmail = Console.ReadLine();
+            Console.WriteLine(userEmail);
         }
 
         private void BonusTwo()
