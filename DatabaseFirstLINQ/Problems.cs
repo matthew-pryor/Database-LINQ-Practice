@@ -21,13 +21,13 @@ namespace DatabaseFirstLINQ
             //ProblemFour();
             //ProblemFive();
             //ProblemSix();
-            ProblemSeven();
-            ProblemEight();
+            //ProblemSeven();
+            //ProblemEight();
             //ProblemNine();
-            //ProblemTen();
+            ProblemTen();
             //ProblemEleven();
             //ProblemTwelve();
-            //ProblemThirteen();
+            ProblemThirteen();
             //ProblemFourteen();
             //ProblemFifteen();
             //ProblemSixteen();
@@ -153,22 +153,10 @@ namespace DatabaseFirstLINQ
             // Write a LINQ query that retreives all of the products in the shopping cart of the user who has the email "oda@gmail.com" and returns the sum of all of the products prices.
             // HINT: End of query will be: .Select(sc => sc.Product.Price).Sum();
             // Then print the total of the shopping cart to the console.
-            var users = _context.Users;
-            var shoppingCarts = _context.ShoppingCarts;
 
-            foreach (User user in users)
-            {
-                if (user.Email == "oda@gmail.com")
-                {
-                    foreach (ShoppingCart shoppingCart in shoppingCarts)
-                    {
-                        if (user.Id == shoppingCart.UserId)
-                        {
-                            Console.WriteLine(shoppingCart.ProductId);
-                        }
-                    }
-                }
-            }
+            var odaShoppingCartPrice = _context.ShoppingCarts.Include(sc => sc.Product).Include(sc => sc.User).Where(sc => sc.User.Email == "oda@gmail.com").Select(sc => sc.Product.Price).Sum();
+            
+            Console.WriteLine($"Total Price: ${odaShoppingCartPrice}");
 
 
         }
@@ -199,6 +187,15 @@ namespace DatabaseFirstLINQ
         private void ProblemTwelve()
         {
             // Create a new Product object and add that product to the Products table using LINQ.
+            Product newProduct = new Product()
+            {
+                Name = "Elden Ring",
+                Price = 70,
+                Description = "RPG Video Game"
+            };
+
+            _context.Products.Add(newProduct);
+            _context.SaveChanges();
 
         }
 
