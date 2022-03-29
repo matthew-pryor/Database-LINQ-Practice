@@ -324,35 +324,42 @@ namespace DatabaseFirstLINQ
             // Prompt the user to enter in an email and password through the console.
             // Take the email and password and check if the there is a person that matches that combination.
             // Print "Signed In!" to the console if they exists and the values match otherwise print "Invalid Email or Password.".
-
-            var users = _context.Users;
-
-            Console.WriteLine("Enter an email");
+            Console.WriteLine("Enter in your email:");
             string userEmail = Console.ReadLine();
-
-            Console.WriteLine("Enter a password");
+            Console.WriteLine("Enter in your password:");
             string userPassword = Console.ReadLine();
 
-            foreach (User user in users)
+            var userLogin = _context.Users.Where(ur => ur.Email == userEmail && ur.Password == userPassword).SingleOrDefault();
+            
+            if (userLogin != null)
             {
-                if (user.Email == userEmail && user.Password == userPassword)
-                {
-                    Console.WriteLine("Signed In!");
-                }
-
-                else
-                {
-                    Console.WriteLine("Invalid Email or Password");
-                }
+                Console.WriteLine("Signed In!");
             }
-
-
+            else
+            {
+                Console.WriteLine("Invalid Email or Password");
+            }
         }
+
 
         private void BonusTwo()
         {
             // Write a query that finds the total of every users shopping cart products using LINQ.
             // Display the total of each users shopping cart as well as the total of the toals to the console.
+
+
+            var userShoppingCart2 = _context.ShoppingCarts.Where(sc => sc.UserId == 2).Select(sc => sc.Product.Price).Sum();
+            var userShoppingCart3 = _context.ShoppingCarts.Where(sc => sc.UserId == 3).Select(sc => sc.Product.Price).Sum();
+            var userShoppingCart4 = _context.ShoppingCarts.Where(sc => sc.UserId == 4).Select(sc => sc.Product.Price).Sum();
+            var userShoppingCart5 = _context.ShoppingCarts.Where(sc => sc.UserId == 5).Select(sc => sc.Product.Price).Sum();
+            var userShoppingCart6 = _context.ShoppingCarts.Where(sc => sc.UserId == 6).Select(sc => sc.Product.Price).Sum();
+
+            Console.WriteLine(userShoppingCart2);
+            Console.WriteLine(userShoppingCart3);
+            Console.WriteLine(userShoppingCart4);
+            Console.WriteLine(userShoppingCart5);
+            Console.WriteLine(userShoppingCart6);
+
         }
 
         // BIG ONE
