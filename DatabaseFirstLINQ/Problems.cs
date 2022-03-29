@@ -35,7 +35,8 @@ namespace DatabaseFirstLINQ
             //ProblemEighteen();
             //ProblemNineteen();
             //ProblemTwenty();
-            BonusOne();
+            //BonusOne();
+            BonusTwo();
         }
 
         // <><><><><><><><> R Actions (Read) <><><><><><><><><>
@@ -337,13 +338,27 @@ namespace DatabaseFirstLINQ
                 Console.WriteLine("Invalid Email or Password");
             }
         }
-
         private void BonusTwo()
         {
             // Write a query that finds the total of every users shopping cart products using LINQ.
             // Display the total of each users shopping cart as well as the total of the toals to the console.
-        }
+            var users = _context.Users.ToList();
+            int userTotal = 0;
+            int sumTotal = 0;
 
+            foreach (User user in users)
+            {
+                userTotal = 0;
+                var userSCTotal = _context.ShoppingCarts.Include(sc => sc.Product).Include(sc => sc.User).Where(sc => sc.UserId == user.Id);
+                foreach (ShoppingCart item in userSCTotal)
+                {
+                    userTotal += (int)item.Product.Price * (int)item.Quantity;
+                    sumTotal += (int)item.Product.Price * (int)item.Quantity;
+                }
+                Console.WriteLine($"User: {user.Email} Total: ${userTotal}");
+            }
+            Console.WriteLine($"The Grand Total is ${sumTotal}");
+        }
         // BIG ONE
         private void BonusThree()
         {
