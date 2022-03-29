@@ -36,7 +36,8 @@ namespace DatabaseFirstLINQ
             //ProblemNineteen();
             //ProblemTwenty();
             //BonusOne();
-            BonusTwo();
+            //BonusTwo();
+            BonusThree();
         }
 
         // <><><><><><><><> R Actions (Read) <><><><><><><><><>
@@ -340,28 +341,27 @@ namespace DatabaseFirstLINQ
                 Console.WriteLine("Invalid Email or Password");
             }
         }
-
-
         private void BonusTwo()
         {
             // Write a query that finds the total of every users shopping cart products using LINQ.
             // Display the total of each users shopping cart as well as the total of the toals to the console.
+            var users = _context.Users.ToList();
+            int userTotal = 0;
+            int sumTotal = 0;
 
-
-            var userShoppingCart2 = _context.ShoppingCarts.Where(sc => sc.UserId == 2).Select(sc => sc.Product.Price).Sum();
-            var userShoppingCart3 = _context.ShoppingCarts.Where(sc => sc.UserId == 3).Select(sc => sc.Product.Price).Sum();
-            var userShoppingCart4 = _context.ShoppingCarts.Where(sc => sc.UserId == 4).Select(sc => sc.Product.Price).Sum();
-            var userShoppingCart5 = _context.ShoppingCarts.Where(sc => sc.UserId == 5).Select(sc => sc.Product.Price).Sum();
-            var userShoppingCart6 = _context.ShoppingCarts.Where(sc => sc.UserId == 6).Select(sc => sc.Product.Price).Sum();
-
-            Console.WriteLine(userShoppingCart2);
-            Console.WriteLine(userShoppingCart3);
-            Console.WriteLine(userShoppingCart4);
-            Console.WriteLine(userShoppingCart5);
-            Console.WriteLine(userShoppingCart6);
-
+            foreach (User user in users)
+            {
+                userTotal = 0;
+                var userSCTotal = _context.ShoppingCarts.Include(sc => sc.Product).Include(sc => sc.User).Where(sc => sc.UserId == user.Id);
+                foreach (ShoppingCart item in userSCTotal)
+                {
+                    userTotal += (int)item.Product.Price * (int)item.Quantity;
+                    sumTotal += (int)item.Product.Price * (int)item.Quantity;
+                }
+                Console.WriteLine($"User: {user.Email} Total: ${userTotal}");
+            }
+            Console.WriteLine($"The Grand Total is ${sumTotal}");
         }
-
         // BIG ONE
         private void BonusThree()
         {
@@ -375,6 +375,196 @@ namespace DatabaseFirstLINQ
             // 3. If the user does not succesfully sing in
             // a. Display "Invalid Email or Password"
             // b. Re-prompt the user for credentials
+
+            bool userLoginAttempt = false;
+
+            while (userLoginAttempt == false)
+            {
+                Console.WriteLine("Do you want to login? [Y/N]");
+                string loginPrompt = Console.ReadLine();
+
+                if (loginPrompt == "Y" || loginPrompt == "y" || loginPrompt == "yes")
+                {
+                    bool loginSuccess = false;
+
+                    while (loginSuccess == false)
+                    {
+                        Console.WriteLine("Enter in your email:");
+                        string userEmail = Console.ReadLine();
+                        Console.WriteLine("Enter in your password:");
+                        string userPassword = Console.ReadLine();
+
+                        var userLogin = _context.Users.Where(ur => ur.Email == userEmail && ur.Password == userPassword).SingleOrDefault();
+
+                        if (userLogin != null)
+                        {
+                            Console.WriteLine("Signed In!");
+                            loginSuccess = true;
+
+                            Console.WriteLine("Would you like to see available products? Or view your cart? [1] for Products, [2] for Cart");
+                            string userOptions = Console.ReadLine();
+
+                            if (userOptions == "1")
+                            {
+                                var products = _context.Products;
+                                foreach (var product in products)
+                                {
+                                    Console.WriteLine(product.Id + " " + "Product: " + product.Name + " " + "Price: " + product.Price);
+                                }
+
+                                Console.WriteLine("Would you like to add anything to your cart? [1] for Yes, [2] for No");
+                                string userOptions2 = Console.ReadLine();
+
+                                if (userOptions2 == "1")
+                                {
+                                    bool cartSatisfaction = false;
+
+                                    while (cartSatisfaction == false)
+                                    {
+                                        Console.WriteLine("Please select an item from the list of products using its item number to the left of the item");
+                                        string userOptions3 = Console.ReadLine();
+
+                                        if (userOptions3 == "1" || userOptions3 == "2" || userOptions3 == "3" || userOptions3 == "4" || userOptions3 == "5" || userOptions3 == "6" || userOptions3 == "7" || userOptions3 == "8")
+                                        {
+                                            var cartSelection = int.Parse(userOptions3);
+                                            var userId = _context.Users.Where(u => u.Email == userEmail).Select(u => u.Id).SingleOrDefault();
+                                            var productId = _context.Products.Where(p => p.Id == cartSelection).Select(p => p.Id).SingleOrDefault();
+
+                                            try
+                                            {
+
+                                                var userShoppingCart = _context.ShoppingCarts.Where(sc => sc.UserId == userId && sc.ProductId == productId).SingleOrDefault();
+                                                userShoppingCart.Quantity += 1;
+                                                _context.ShoppingCarts.Update(userShoppingCart);
+                                                _context.SaveChanges();
+
+                                                
+                                            }
+
+                                            catch
+                                            {
+                                                ShoppingCart newShoppingCart = new ShoppingCart()
+                                                {
+                                                    UserId = userId,
+                                                    ProductId = productId,
+                                                    Quantity = 1
+                                                };
+
+                                                _context.ShoppingCarts.Add(newShoppingCart);
+                                                _context.SaveChanges();
+                                            }
+                                            
+
+                                        }
+
+                                        Console.WriteLine("Would you like to add anything else to your cart? [1] for Yes, [2] for No");
+                                        string userOptions4 = Console.ReadLine();
+
+                                        if (userOptions4 == "1")
+                                        {
+                                            cartSatisfaction = false;
+                                        }
+
+                                        else if (userOptions4 == "2")
+                                        {
+                                            cartSatisfaction= true;
+                                        }
+                                    }
+
+                                    Console.WriteLine("Here is everything in your cart:");
+
+                                    var scProducts = _context.ShoppingCarts.Include(ur => ur.Product).Include(ur => ur.User).Where(ur => ur.User.Email == userEmail);
+                                    int scTotal = 0;
+
+                                    foreach (ShoppingCart item in scProducts)
+                                    {
+                                        scTotal += (int)(item.Quantity * item.Product.Price);
+                                        Console.WriteLine($"Product: {item.Product.Id} {item.Product.Name} Quantity: {item.Quantity} Price: ${(item.Product.Price) * (item.Quantity)}"); //self-note: second dollar symbol is used to reflect $299 as price (example)
+                                    }
+
+                                    Console.WriteLine($"Total Price: ${scTotal}");
+
+                                    bool cartSatisfaction2 = false;
+
+                                    Console.WriteLine("Would you like to remove anything from your cart? [1] for Yes, [2] for No");
+                                    string userOptions5 = Console.ReadLine();
+
+                                    if (userOptions5 == "1")
+                                    {
+                                        while (cartSatisfaction2 == false)
+                                        {
+                                            Console.WriteLine("Please select an item from the list of products using its item number to the left of the item");
+                                            string userOptions6 = Console.ReadLine();
+
+                                            if (userOptions6 == "1" || userOptions6 == "2" || userOptions6 == "3" || userOptions6 == "4" || userOptions6 == "5" || userOptions6 == "6" || userOptions6 == "7" || userOptions6 == "8")
+                                            {
+                                                var cartSelection = int.Parse(userOptions6);
+                                                var userId = _context.Users.Where(u => u.Email == userEmail).Select(u => u.Id).SingleOrDefault();
+                                                var productId = _context.Products.Where(p => p.Id == cartSelection).Select(p => p.Id).SingleOrDefault();
+                                                var selectedProduct = _context.Products.FirstOrDefault(p => p.Id == productId);
+                                                var userShoppingCart = _context.ShoppingCarts.Where(sc => sc.UserId == userId && sc.ProductId == productId).SingleOrDefault();
+
+                                                if (userShoppingCart.Quantity > 0)
+                                                {
+                                                    
+                                                    userShoppingCart.Quantity -= 1;
+                                                    _context.ShoppingCarts.Update(userShoppingCart);
+                                                    _context.SaveChanges();
+                                                }
+
+                                                else
+                                                {     
+                                                    _context.ShoppingCarts.Remove(userShoppingCart);
+                                                    _context.SaveChanges();
+                                                    
+                                                    
+                                                }
+
+                                                Console.WriteLine("Here is everything in your cart:");
+
+                                                var scUpdatedProducts = _context.ShoppingCarts.Include(ur => ur.Product).Include(ur => ur.User).Where(ur => ur.User.Email == userEmail);
+                                                int scUpdatedTotal = 0;
+
+                                                foreach (ShoppingCart item in scUpdatedProducts)
+                                                {
+                                                    scTotal += (int)(item.Quantity * item.Product.Price);
+                                                    Console.WriteLine($"Product: {item.Product.Id} {item.Product.Name} Quantity: {item.Quantity} Price: ${(item.Product.Price) * (item.Quantity)}"); //self-note: second dollar symbol is used to reflect $299 as price (example)
+                                                }
+
+                                                Console.WriteLine($"Total Price: ${scUpdatedTotal}");
+                                            }
+                                        }
+                                    }
+
+                                }
+
+                            }
+
+                            else if (userOptions == "2")
+                            {
+
+                            }
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid Email or Password");
+                        }
+                    }
+                    
+                }
+
+                else
+                {
+                    Console.WriteLine("Goodbye!");
+                    userLoginAttempt = true;
+                }
+
+            }
+
+            //afton@gmail.com
+            //AftonsPass123
+
 
         }
 
